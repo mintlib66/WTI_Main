@@ -6,11 +6,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -77,6 +80,17 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Button gotoListBT = (Button)findViewById(R.id.gotoListBT);
+        gotoListBT.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(
+                        getApplicationContext(),
+                        ListActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -87,27 +101,26 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
 
         UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
-        uiSettings.setCompassEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
 
         //마커 추가
         LatLng CNU1 = new LatLng(36.364739, 127.344349);
         LatLng CNU2 = new LatLng(36.369448, 127.344456);
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions
+        MarkerOptions markerOptions1 = new MarkerOptions();
+        markerOptions1
                 .position(CNU1)
-                .title("1번 기기")
-                .snippet("부연설명이 들어가는 란입니다.")
+                .title("1번 단말")
+                .snippet("해당 단말의 상세정보가 들어갑니다.")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
         MarkerOptions markerOptions2 = new MarkerOptions();
         markerOptions2
                 .position(CNU2)
-                .title("2번 기기")
-                .snippet("부연설명이 들어가는 란입니다.");
+                .title("2번 단말")
+                .snippet("해당 단말의 상세정보가 들어갑니다.");
 
-        mMap.addMarker(markerOptions);
+        mMap.addMarker(markerOptions1).showInfoWindow();
         mMap.addMarker(markerOptions2);
 
         //마커클릭 이벤트 리스너
@@ -130,52 +143,3 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
     }
 }
 
-/*
-private void updateLocationUI() {
-    if (mMap == null) {
-        return;
-    }
-    try {
-        if (mLocationPermissionGranted) {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        } else {
-            mMap.setMyLocationEnabled(false);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            mLastKnownLocation = null;
-            getLocationPermission();
-        }
-    } catch (SecurityException e)  {
-        Log.e("Exception: %s", e.getMessage());
-    }
-}
-*/
-
-/*
-    private void getDeviceLocation() {
-        try {
-            if (mLocationPermissionGranted) {
-                Task locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()) {
-                            mLastKnownLocation = task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                        } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        }
-                    }
-                });
-            }
-        } catch(SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-
-    }
-    */
