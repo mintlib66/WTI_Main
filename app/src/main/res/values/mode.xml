@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="displayMode">
+        <item>모드:단말</item>
+        <item>모드:AP</item>
+    </string-array>
+</resources>

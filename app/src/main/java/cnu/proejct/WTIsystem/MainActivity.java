@@ -8,12 +8,16 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
     private Location mLastKnownLocation;
+
+    SQLiteDatabase db = null;
 
 /*
     //런타임 권한 요청
@@ -77,11 +83,13 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //구글 맵
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        Button gotoListBT = (Button)findViewById(R.id.gotoListBT);
+        //목록보기 버튼
+        final Button gotoListBT = (Button)findViewById(R.id.gotoListBT);
         gotoListBT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +99,35 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
                 startActivity(intent);
             }
         });
+
+        //모드 선택 스피너
+        Spinner spinner = (Spinner)findViewById(R.id.modeSpinner);
+
+        ArrayAdapter modeAdapter = ArrayAdapter.createFromResource(
+                this, R.array.displayMode, android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(modeAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
+                //0 : 단말모드, 1: AP모드
+                if(position == 0){
+                    //목록보기 버튼 보임, 지도에 점 안보임
+                    gotoListBT.setVisibility(View.VISIBLE);
+                    //버튼 누르면 지도 내의 단말들  리스트 출력.
+                    parent.getItemAtPosition(position);
+                }
+                else if(position == 1){
+                    //목록보기 버튼 안보임, 지도에 AP 점으로 보임.
+                    gotoListBT.setVisibility(View.INVISIBLE);
+                    //AP클릭 시 해당 AP에서 감지된 목록 보여줌
+                    parent.getItemAtPosition(position);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent){
+            }
+        });
+
     }
 
     @Override
@@ -103,6 +140,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
         uiSettings.setZoomControlsEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
 
+        //** 마커 표시하는 부분 하드코딩 : 개별 메소드로 분리해서 적용시킬 것. ***/
         //마커 추가
         LatLng CNU1 = new LatLng(36.364739, 127.344349);
         LatLng CNU2 = new LatLng(36.369448, 127.344456);
