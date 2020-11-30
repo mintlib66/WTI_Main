@@ -11,7 +11,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
+<!--
     <Spinner
         android:id="@+id/modeSpinner"
         android:layout_width="110dp"
@@ -24,7 +24,7 @@
         android:spinnerMode="dropdown"
         android:textColor="@color/colorPrimaryDark"
         android:visibility="visible" />
-
+-->
     <Button
         android:id="@+id/gotoListBT"
         android:layout_width="wrap_content"
@@ -35,5 +35,17 @@
         android:layout_marginLeft="15dp"
         android:layout_marginBottom="15dp"
         android:text="목록보기" />
+
+    <Button
+        android:id="@+id/dbManageBT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="304dp"
+        android:layout_marginLeft="304dp"
+        android:layout_marginBottom="15dp"
+        android:text="db관리" />
 
 </RelativeLayout>
