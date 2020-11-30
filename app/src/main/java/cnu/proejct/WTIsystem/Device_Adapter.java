@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-//ListActivity를 지금.. RecyclerView로 변경 후 연동
 
 public class Device_Adapter extends RecyclerView.Adapter<Device_Adapter.ViewHolder>{
       private ArrayList<Device> items = new ArrayList<Device>();

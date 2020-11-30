@@ -24,9 +24,6 @@ public class DBHelper extends SQLiteOpenHelper {
       public static final String LAT = "lat";
       public static final String LNG = "lng";
 
-      public static final String SELECT_WTI = "SELECT * FROM " + TB_NAME1;
-      public static final String SELECT_MAP = "SELECT * FROM " + TB_NAME2;
-
       public static final String[] ALL_COLUMNS_WTI = {TIMESTAMP, APADDRESS, DEVICE, CERTIFIED};
       public static final String[] ALL_COLUMNS_MAP = {APADDRESS, LAT, LNG};
 
@@ -71,9 +68,4 @@ public class DBHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TB_NAME2);
             onCreate(db);
       }
-
-
-      //db 중복체크?
-
-
 }

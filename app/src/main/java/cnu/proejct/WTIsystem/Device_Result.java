@@ -198,8 +198,8 @@ public class Device_Result extends AppCompatActivity implements OnMapReadyCallba
             //인가여부도 고정
             tv_certified.setText(selectedCertified);
 
-            //한 AP에서 여러 번 감지된 경우 어느 시간들에서 감지되었는지..
-            //단말 이동경로 정보를 출력하면 좋은데 스크롤뷰? ?
+            //한 AP에서 여러 번 감지된 경우 어느 시간들에서 감지되었는지.
+            //단말 이동경로 정보를 출력하면 좋은데 스크롤뷰?
 
 
             //makeMarkerUsingDB : 현재 입력 ap값에 해당하는 latlng값 db에서 검색해서 출력.

@@ -1,22 +1,14 @@
 package cnu.proejct.WTIsystem;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-
-//ListActivity를 지금.. RecyclerView로 변경 후 연동
 
 public class db_Adapter extends RecyclerView.Adapter<db_Adapter.ViewHolder>{
       private ArrayList<Device> items = new ArrayList<Device>();
@@ -83,32 +75,6 @@ public class db_Adapter extends RecyclerView.Adapter<db_Adapter.ViewHolder>{
             return items.size();
       }
 
-      //클릭이벤트-> 삭제 다일로그 뜸
-      //리사이클러뷰에서는 Context를 사용할 수 없음 -> 전역변수로 만들어서 사용
-      /*
-      public void itemClickEvent(Context mContext, int pos){
-            // 정보값 전달
-            String tv_time = items.get(pos).getTimestamp();
-            String tv_apAdrs = items.get(pos).getApAddress();
-            String tv_device = items.get(pos).getDeviceMAC();
-            String tv_certified = items.get(pos).getIsCertified();
-
-            AlertDialog.Builder dlg = new AlertDialog.Builder(this); //...........컨텍스트 짜증나
-            dlg.setTitle("알림"); //제목
-            dlg.setMessage(tv_time+", "+tv_apAdrs+", "+tv_device+", "+tv_certified+" 데이터를 삭제하시겠습니까?"); // 메시지
-
-            // 버튼 클릭시 동작
-            dlg.setPositiveButton("확인",new DialogInterface.OnClickListener(){
-                  public void onClick(DialogInterface dialog, int which) {
-                        Log.d("[db] ", "delete Data ");
-                  }
-            });
-            dlg.setNegativeButton("취소", null);
-
-            dlg.show();
-      }
-
-       */
 }
 
 

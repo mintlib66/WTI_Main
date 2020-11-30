@@ -1,8 +1,6 @@
 package cnu.proejct.WTIsystem;
 
-//RecyclerView(Extended ListView)
 //해당 AP에 감지된 device 목록 출력 -- 시간 기준 Expanded List 형태.
-// **** 현재 클릭한 것과 관계없이 모든 결과 뜸-> 이부분 해결 ****
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,16 +12,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,25 +56,6 @@ public class Recycler_AP_Activity extends AppCompatActivity{
             recyclerView = (RecyclerView) findViewById(R.id.recyclerView_ap);
             recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             List<AP_Adapter.Item> data = new ArrayList<>();  // 데이터를 담을 List
-/*
-            //DB에서 값 read해와서 시간대별로 아이템 그룹 생성-> 2레벨 리스트로
-            //테스트용 임시데이터
-            List<Device> items1 = new ArrayList<>();
-            List<Device> items2 = new ArrayList<>();
-
-
-            for(int i=1; i<6; i++){
-                  String num = Integer.toString(i);
-                  items1.add(new Device("12:00", "AP"+num, "deviceMAC "+num, "certified"));
-                  items2.add(new Device("14:00", "AP"+num, "deviceMAC "+num, "certified"));
-
-            }
-
-
-            //이걸 시간대별로 나누고(자동선별)
-            addItemGroup(data, items1);
-            addItemGroup(data, items2);
-*/
 
             selectRecord_map(data); //db 가져와서 리스트에 넣기
 
@@ -90,7 +66,6 @@ public class Recycler_AP_Activity extends AppCompatActivity{
 
       //*** 리사이클러뷰+상단 텍스트뷰에 데이터 넣는 부분 ***
       //DB값 가져와서 리스트에 넣기 -- timestamp순으로 정렬해서 가져옴
-      //*리스트 값이 timestamp순으로 뜨도록 순서 조정 필요. -> string기준으로 12:00 보다 9:00이 앞에 숫자가 더 커서 뒤에 뜨는듯.
       public void selectRecord_map(List<AP_Adapter.Item> data){
             //전달 값 받아옴
             Intent intent = getIntent();
@@ -106,11 +81,6 @@ public class Recycler_AP_Activity extends AppCompatActivity{
                     " where "+ DBHelper.APADDRESS + " = '" + text_intent_AP_name +"'" +
                     " order by " + DBHelper.TIMESTAMP + " asc";
             Cursor cursor = db.rawQuery(sql,null);
-
-            /*Cursor cursor = dbHelper.getReadableDatabase().query
-                        (DBHelper.TB_NAME1, null, null, null, null, null, DBHelper.TIMESTAMP + " asc");*/
-                        //null반환한 부분은 필터없이 모든 기본 값을 가져오는 걸로 됨
-
 
             String timestamp = null; String apAddress = null; String deviceMac = null; String certified = null;
             List<Device> items;

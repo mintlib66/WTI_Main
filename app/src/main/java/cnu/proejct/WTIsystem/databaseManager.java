@@ -18,7 +18,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-//DB 구성 어떻게 할지?
+//DB 확인용
 
 public class databaseManager extends AppCompatActivity {
     //device 목록 출력 -- 일반 리스트
@@ -182,10 +182,4 @@ public class databaseManager extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    public void deleteData(){
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getWritableDatabase();
-
-        db.close();
-    }
 }

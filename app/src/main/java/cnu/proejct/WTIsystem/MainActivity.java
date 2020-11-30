@@ -8,16 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,7 +24,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 //메인 액티비티
@@ -36,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     Button gotoListBT;
     Button dbManageBT;
-    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initButton();
         initButton2();
         dbManageBT.setVisibility(View.INVISIBLE);
-        //initSpinner();
 
     }
 
@@ -65,8 +58,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         uiSettings.setZoomControlsEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
 
-        //db세팅
-        //init_tb2_dbSetting(); init_tb1_dbSetting(); init_tb1_dbSetting2();
+        //db세팅용
+        //init_tb2_dbSetting();
+        //init_tb1_dbSetting();
+        //init_tb1_dbSetting2();
 
         LatLng centerPoint = selectRecord_map();
 
@@ -77,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLng(centerPoint));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-        //updateLocationUI();
-       // getDeviceLocation();
     }
 
     //------------- map create fn-------------------//
@@ -110,45 +103,68 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    //스피너 버튼
-    /*
-    public void initSpinner(){
-        //모드 선택 스피너 생성
-        spinner = (Spinner)findViewById(R.id.modeSpinner);
-        //스피너 어댑터 연결
-        ArrayAdapter modeAdapter = ArrayAdapter.createFromResource(
-                this, R.array.displayMode, android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(modeAdapter);
+    //DB값 가져와서 맵에 AP마커 표시
+    public LatLng selectRecord_map(){
+        DBHelper dbHelper = DBHelper.getInstance(this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(DBHelper.TB_NAME2, null, null, null, null, null, null);
 
-        //스피너 모드에 따른 이벤트 처리
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
-                //0 : 단말모드, 1: AP모드
-                if(position == 0){
-                    //목록보기 버튼 보임,  버튼 누르면 지도 내의 단말들  리스트 출력.
-                    gotoListBT.setVisibility(View.VISIBLE);
-                    parent.getItemAtPosition(position);
+        String title = null; double lat = 0; double lng = 0;
 
-                    //markerOptions1.visible(false);
-                }
-                else if(position == 1){
-                    //목록보기 버튼 안보임
-                    gotoListBT.setVisibility(View.INVISIBLE);
-                    parent.getItemAtPosition(position);
+        while(cursor.moveToNext()){
+            title = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.APADDRESS));
+            lat = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.LAT));
+            lng = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.LNG));
 
-                    //지도에 AP 점으로 보임.
-                    //AP클릭 시 해당 AP에서 감지된 목록 보여줌
-                    //markerOptions1.visible(true);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent){
-            }
-        });
+            MarkerOptions markerOptions = new MarkerOptions();
+
+            markerOptions
+                    .visible(true)
+                    .position(new LatLng(lat, lng))
+                    .title(title)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+
+            mMap.addMarker(markerOptions);
+            //마커클릭 이벤트 처리
+        }
+        db.close();
+        return new LatLng(lat, lng);
     }
-    */
-    //------------- map ready fn-------------------//
+
+    //맵에 AP 마커 표시
+    public void makeAPMarkersOnMap(List<LatLng> latLngs, List<String> titles){
+        //리스트의 마커 수만큼 표시
+        for(int i = 0; i<latLngs.size(); i++){
+            MarkerOptions markerOptions = new MarkerOptions();
+
+            markerOptions
+                    .visible(true)
+                    .position(latLngs.get(i))
+                    .title(titles.get(i))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+
+            mMap.addMarker(markerOptions);
+        }
+    }
+
+    //마커클릭 이벤트 처리
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        //마커 클릭시 리사이클러 AP 뷰 화면으로 넘어가도록 할 것
+        Intent intent_main_ap = new Intent(getApplicationContext(), Recycler_AP_Activity.class);
+        intent_main_ap.putExtra("AP_name", marker.getTitle());
+
+        startActivityForResult(intent_main_ap, 101);
+        return true;
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        if (mMap != null) {
+            super.onSaveInstanceState(outState);
+        }
+    }
 
     //*** 테스트 데이터 구성하는 부분 ***
     //테스트용 데이터 DB 생성
@@ -249,81 +265,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //--------------------------------------------------------------//
 
-
-
-    //DB값 가져와서 맵에 AP마커 표시
-    public LatLng selectRecord_map(){
-        DBHelper dbHelper = DBHelper.getInstance(this);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DBHelper.TB_NAME2, null, null, null, null, null, null);
-
-        String title = null; double lat = 0; double lng = 0;
-
-        while(cursor.moveToNext()){
-            title = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.APADDRESS));
-            lat = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.LAT));
-            lng = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.LNG));
-
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            markerOptions
-                    .visible(true)
-                    .position(new LatLng(lat, lng))
-                    .title(title)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-
-            mMap.addMarker(markerOptions);
-            //마커클릭 이벤트 처리
-        }
-        db.close();
-        return new LatLng(lat, lng);
-    }
-
-    //맵에 AP 마커 표시
-    public void makeAPMarkersOnMap(List<LatLng> latLngs, List<String> titles){
-        //리스트의 마커 수만큼 표시
-        for(int i = 0; i<latLngs.size(); i++){
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            markerOptions
-                    .visible(true)
-                    .position(latLngs.get(i))
-                    .title(titles.get(i))
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-
-            mMap.addMarker(markerOptions);
-        }
-    }
-
-    //마커클릭 이벤트 처리
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        //마커 클릭시 리사이클러 AP 뷰 화면으로 넘어가도록 할 것
-        Intent intent_main_ap = new Intent(getApplicationContext(), Recycler_AP_Activity.class);
-        intent_main_ap.putExtra("AP_name", marker.getTitle());
-
-        startActivityForResult(intent_main_ap, 101);
-        return true;
-    }
-
-    //
-    private void updateLocationUI(){
-        if (mMap == null) {
-            return;
-        }
-        try{
-            if(true){
-
-            }
-        }catch (SecurityException e){
-
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        if (mMap != null) {
-            super.onSaveInstanceState(outState);
-        }
-    }
 }//end class

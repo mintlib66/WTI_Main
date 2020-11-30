@@ -23,7 +23,7 @@ public class AP_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
       public static final int HEADER = 0;
       public static final int CHILD = 1;
 
-      //private ArrayList<Device> items = new ArrayList<Device>(); //이걸 어따쓰더라
+      //private ArrayList<Device> items = new ArrayList<Device>();
 
       static Context mContext;
       private static List<Item> data;
